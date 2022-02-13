@@ -3,7 +3,7 @@ version: '3.9'
 services:
   chain-grabber:
     container_name: chain-grabber
-    env_file: ${ENV}/.env
+    env_file: ${ENV_FILE}
     build: 
       context: .
       dockerfile: Dockerfile
@@ -26,7 +26,7 @@ services:
 
   explorer-api:
     container_name: explorer-api
-    env_file: ${ENV}/.env
+    env_file: ${ENV_FILE}
     build: 
       context: .
       dockerfile: Dockerfile
@@ -51,7 +51,7 @@ services:
 
   utx-tracker:
     container_name: utx-tracker
-    env_file: ${ENV}/.env
+    env_file: ${ENV_FILE}
     image: openjdk:8-jre-slim
     volumes:
       - /ergo/xp:/app
@@ -62,7 +62,7 @@ services:
 
   utx-broadcaster:
     container_name: utx-broadcaster
-    env_file: ${ENV}/.env
+    env_file: ${ENV_FILE}
     image: openjdk:8-jre-slim
     volumes:
       - /ergo/xp:/ergo/xp
