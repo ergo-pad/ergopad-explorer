@@ -1,0 +1,78 @@
+version: '3.9'
+
+services:
+  chain-grabber:
+    container_name: chain-grabber
+    env_file: app/.env
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    networks:
+      - ergopad-node_net
+      - ergopad-data_net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 90s
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 10m
+    command: java -Dconfig.file=chain-grabber.conf -jar chain-grabber.jar
+
+  explorer-api:
+    container_name: explorer-api
+    env_file: app/.env
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - ${EXPLORER_PORT}:8080
+    working_dir: /app
+    networks:
+      - ergopad-node_net
+      - ergopad-data_net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 90s
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 10m
+    command: java -Dconfig.file=explorer-api.conf -jar explorer-api.jar
+
+  utx-tracker:
+    container_name: utx-tracker
+    env_file: app/.env
+    image: openjdk:8-jre-slim
+    volumes:
+      - /ergo/xp:/app
+    working_dir: /app
+    profiles:
+      - disabled
+    command: java -Dconfig.file=utx-tracker.conf -jar utx-tracker.jar
+
+  utx-broadcaster:
+    container_name: utx-broadcaster
+    env_file: app/.env
+    image: openjdk:8-jre-slim
+    volumes:
+      - /ergo/xp:/ergo/xp
+    working_dir: /app
+    profiles:
+      - disabled
+    command: java -Dconfig.file=utx-broadcaster.conf -jar utx-broadcaster.jar  
+
+networks:
+  ergopad-node_net:
+    external: true
+  ergopad-data_net:
+    external: true
