@@ -54,10 +54,24 @@ services:
     env_file: ${ENV_FILE}
     image: openjdk:8-jre-slim
     volumes:
-      - /ergo/xp:/app
+      - ./app:/app
     working_dir: /app
     profiles:
       - disabled
+    networks:
+      - ergopad-node_net
+      - ergopad-data_net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 90s
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 10m
     command: java -Dconfig.file=utx-tracker.conf -jar utx-tracker.jar
 
   utx-broadcaster:
@@ -65,10 +79,24 @@ services:
     env_file: ${ENV_FILE}
     image: openjdk:8-jre-slim
     volumes:
-      - /ergo/xp:/ergo/xp
+      - ./app:/app
     working_dir: /app
     profiles:
       - disabled
+    networks:
+      - ergopad-node_net
+      - ergopad-data_net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 90s
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 10m
     command: java -Dconfig.file=utx-broadcaster.conf -jar utx-broadcaster.jar  
 
 networks:
