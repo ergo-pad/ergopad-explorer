@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-slim
+FROM openjdk
 
 COPY ./app /app
 WORKDIR /app
