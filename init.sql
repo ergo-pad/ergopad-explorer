@@ -1,3 +1,6 @@
+-- LE 5/27/2022
+-- 2 updates from original for performance/error fixes (annotated below)
+
 CREATE TABLE node_headers
 (
     id                VARCHAR(64) PRIMARY KEY,
@@ -178,8 +181,8 @@ CREATE TABLE box_registers
     id               VARCHAR(2)    NOT NULL,
     box_id           VARCHAR(64)   NOT NULL,
     value_type       VARCHAR(128)  NOT NULL,
-    serialized_value VARCHAR(8192) NOT NULL,
-    rendered_value   VARCHAR(8192) NOT NULL,
+    serialized_value TEXT          NOT NULL, -- LE 5/27/2022: using default varchar(8192), this breaks on height mid-700k
+    rendered_value   TEXT          NOT NULL, -- LE 5/27/2022: using default varchar(8192), this breaks on height mid-700k
     PRIMARY KEY (id, box_id)
 );
 
@@ -197,7 +200,7 @@ CREATE TABLE script_constants
 );
 
 CREATE INDEX "script_constants__box_id" ON script_constants (box_id);
--- performance issues, commentting out
+-- LE 5/27/2022: performance issues, commentting out
 -- CREATE INDEX "script_constants__rendered_value" ON script_constants using hash (rendered_value);
 
 /* Unconfirmed transactions.
