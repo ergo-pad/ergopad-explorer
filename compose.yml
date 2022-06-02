@@ -1,0 +1,104 @@
+version: '3.9'
+
+services:
+  chain-grabber:
+    container_name: chain-grabber
+    env_file: ${ENV_FILE}
+    image: openjdk
+    working_dir: /app
+    volumes:
+      - ./volumes/chain-grabber.conf:/app/chain-grabber.conf
+      - ./volumes/chain-grabber.jar:/app/chain-grabber.jar
+    networks:
+      - ergopad-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 90s
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 10m
+    command: java -Dconfig.file=chain-grabber.conf -jar chain-grabber.jar
+
+  explorer-api:
+    container_name: explorer-api
+    env_file: ${ENV_FILE}
+    image: openjdk
+    ports:
+      - ${EXPLORER_PORT}:8080
+    working_dir: /app
+    volumes:
+      - ./volumes/explorer-api.conf:/app/explorer-api.conf
+      - ./volumes/explorer-api.jar:/app/explorer-api.jar
+    networks:
+      - ergopad-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 90s
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 10m
+    command: java -Dconfig.file=explorer-api.conf -jar explorer-api.jar
+
+  utx-tracker:
+    container_name: utx-tracker
+    env_file: ${ENV_FILE}
+    image: openjdk
+    working_dir: /app
+    volumes:
+      - ./volumes/utx-tracker.conf:/app/utx-tracker.conf
+      - ./volumes/utx-tracker.jar:/app/utx-tracker.jar
+    networks:
+      - ergopad-net
+    profiles:
+      - disabled
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 90s
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 10m
+    command: java -Dconfig.file=utx-tracker.conf -jar utx-tracker.jar
+
+  utx-broadcaster:
+    container_name: utx-broadcaster
+    env_file: ${ENV_FILE}
+    image: openjdk
+    working_dir: /app
+    volumes:
+      - ./volumes/utx-broadcaster.conf:/app/utx-broadcaster.conf
+      - ./volumes/utx-broadcaster.jar:/app/utx-broadcaster.jar
+    networks:
+      - ergopad-net
+    profiles:
+      - disabled
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 90s
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 10m
+    command: java -Dconfig.file=utx-broadcaster.conf -jar utx-broadcaster.jar  
+
+networks:
+  ergopad-net:
+    external: true
